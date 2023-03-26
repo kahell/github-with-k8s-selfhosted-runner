@@ -1,0 +1,44 @@
+# Create VPC Terraform Module
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "3.19.0"
+
+  # VPC Basic Details
+  name            = "${local.name}-${var.vpc_name}"
+  cidr            = var.vpc_cidr_block
+  azs             = var.vpc_availability_zones
+  public_subnets  = var.vpc_public_subnets
+  private_subnets = var.vpc_private_subnets
+
+  # NAT Gateways - Outbound Communication
+  enable_nat_gateway = var.vpc_enable_nat_gateway
+  # single_nat_gateway = var.vpc_single_nat_gateway
+
+  # VPC DNS Parameters
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+
+  tags     = local.common_tags
+  vpc_tags = local.common_tags
+
+  # Additional Tags to Subnets
+  igw_tags = {
+    Type                 = "Internet Gateway"
+    "Project"            = "Kubernetes POC"
+    "billing:costcenter" = "Internal RnD: Data Engineering Team"
+  }
+  public_subnet_tags = {
+    Type                                              = "Public Subnets"
+    "kubernetes.io/role/internal-elb"                 = "1"
+    "kubernetes.io/cluster/${local.eks_cluster_name}" = "owned"
+    "Project"                                         = "Kubernetes POC"
+    "billing:costcenter"                              = "Internal RnD: Data Engineering Team"
+  }
+  private_subnet_tags = {
+    Type                                              = "Private Subnets"
+    "kubernetes.io/role/internal-elb"                 = "1"
+    "kubernetes.io/cluster/${local.eks_cluster_name}" = "owned"
+    "Project"                                         = "Kubernetes POC"
+    "billing:costcenter"                              = "Internal RnD: Data Engineering Team"
+  }
+}

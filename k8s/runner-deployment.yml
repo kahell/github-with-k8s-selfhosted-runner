@@ -1,0 +1,21 @@
+apiVersion: actions.summerwind.dev/v1alpha1
+kind: RunnerDeployment
+metadata:
+  name: k8s-runners
+  namespace: actions
+spec:
+  template:
+    spec:
+      repository: <your-repository-name>
+      labels:
+        - cicd-runner-1
+      env:
+        - name: PROD
+          value: "true"
+      resources:
+        requests:
+          cpu: "0.5"
+          memory: "100Mi"
+        limits:
+          cpu: "0.5"
+          memory: "1Gi"
